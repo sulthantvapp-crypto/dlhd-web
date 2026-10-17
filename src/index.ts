@@ -21,3 +21,8 @@ export type { ResolveContext } from "./resolver/resolve.js";
 export { buildProxyUrl, buildVlcCommand, buildMpvCommand } from "./proxy/links.js";
 export { proxyStream } from "./proxy/stream.js";
 export type { ProxyResult } from "./proxy/stream.js";
+
+// പുതിയ സ്റ്റാറ്റിക് ലൈവ് ഇവന്റ്സ് എക്സ്പോർട്ടുകൾ
+export type { LiveEvent } from "./events/staticEvents.js";
+export { STATIC_LIVE_EVENTS, getStaticLiveEvents } from "./events/staticEvents.js";
+export { generateStaticEventPlaylist } from "./events/m3u8.js";
