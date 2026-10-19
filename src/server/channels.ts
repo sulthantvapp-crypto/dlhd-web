@@ -52,4 +52,3 @@ export async function handleStreamResolver(res: ServerResponse, channelId: numbe
   });
   res.end(`Failed to resolve live stream for channel ${channelId}`);
 }
-
