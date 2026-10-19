@@ -3,16 +3,15 @@ import { readFileSync, existsSync } from "node:fs";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
 
-import { proxyStream } from "../proxy/stream.js";
-import { renderPage } from "../web/page.js";
-import { handleChannelList, handlePlaylist, handleStreamResolver } from "./channels.js";
-import { handleResolveLive } from "./resolve.js";
-
+import { proxyStream } from "./proxy/stream.js";
+import { renderPage } from "./web/page.js";
+import { handleChannelList, handlePlaylist, handleStreamResolver } from "./api/channels.js";
+import { handleResolveLive } from "./api/resolve.js";
 
 const PORT = Number(process.env.PORT ?? "3000");
 
 const webRoot = [
-  join(dirname(fileURLToPath(import.meta.url)), "../web"),
+  join(dirname(fileURLToPath(import.meta.url)), "./web"),
   join(process.cwd(), "src/web"),
 ].find((path) => existsSync(join(path, "style.css")))!;
 
