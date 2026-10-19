@@ -5,8 +5,8 @@ import { fileURLToPath } from "node:url";
 
 import { proxyStream } from "../proxy/stream.js";
 import { renderPage } from "../web/page.js";
-import { handleChannelList, handlePlaylist, handleStreamResolver } from "../api/channels.js";
-import { handleResolveLive } from "../api/resolve.js";
+import { handleChannelList, handlePlaylist, handleStreamResolver } from "../../api/channels.js";
+import { handleResolveLive } from "../../api/resolve.js";
 
 const PORT = Number(process.env.PORT ?? "3000");
 
