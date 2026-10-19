@@ -20,6 +20,7 @@ export function generateM3u8Playlist(channels: Channel[], origin: string): strin
 
   for (const ch of channels) {
     const safeName = sanitizeTvgName(ch.name);
+    // ഒറിജിനൽ പ്രോക്സി സ്ട്രീം റൂട്ട് വഴി ലിങ്കുകൾ ജനറേറ്റ് ചെയ്യുന്നു, ഇത് ടോക്കൺ എക്സ്പയർ ആവാതെ ലൈവായി വർക്ക് ചെയ്യും
     const streamUrl = `${origin.replace(/\/+$/, "")}/api/stream/${ch.id}.m3u8`;
     lines.push(
       `#EXTINF:-1 tvg-id="${ch.id}" tvg-name="${safeName}" group-title="DaddyLive 24/7",${ch.name}`,
