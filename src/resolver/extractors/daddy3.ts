@@ -1,6 +1,6 @@
 const ATOB_RE = /atob\('([^']+)'\)/;
 const M3U8_RE =
-  /https:\/\/[^"'`\s]+\/three\/secure\/[0-9a-f]{32}\/\d+\/premium\d+\/index\.m3u8/;
+  /https:\/\/[^"'`\s]+\/three\/secure\/[0-9a-f]{32}\/\d+\/premium\d+\/index\.m3u8(?:\?[^"'`\s]*)?/;
 
 export function extractDaddy3M3u8(html: string): string | null {
   const b64 = html.match(ATOB_RE)?.[1];
