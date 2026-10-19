@@ -5,8 +5,9 @@ import { fileURLToPath } from "node:url";
 
 import { proxyStream } from "../proxy/stream.js";
 import { renderPage } from "../web/page.js";
-import { handleChannelList, handlePlaylist, handleStreamResolver } from "../../api/channels.js";
-import { handleResolveLive } from "../../api/resolve.js";
+// പാത്തുകൾ നിന്റെ പുതിയ ഫോൾഡർ സ്ട്രക്ചർ അനുസരിച്ച് താഴെ കാണുന്ന രീതിയിൽ മാറ്റിയിരിക്കുന്നു:
+import { handleChannelList, handlePlaylist, handleStreamResolver } from "../channels/index.js"; 
+import { handleResolveLive } from "../resolver/index.js"; // അല്ലെങ്കിൽ അവിടത്തെ ശരിയായ ഫയലിലേക്ക്
 
 const PORT = Number(process.env.PORT ?? "3000");
 
