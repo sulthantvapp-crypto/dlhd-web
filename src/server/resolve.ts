@@ -45,7 +45,7 @@ function toServerExport(
     direct,
     proxied: buildProxyUrl(direct, resolved.embedUrl, origin),
     vlc: buildVlcCommand(direct, resolved.embedUrl, origin),
-    mpv: buildMpvCommand(direct, resolved.embedUrl,origin, title),
+    mpv: buildMpvCommand(direct, resolved.embedUrl, origin, title),
     isHls: resolved.mimeType === "application/x-mpegURL",
     ms,
     duplicateOf,
