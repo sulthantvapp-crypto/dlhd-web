@@ -32,9 +32,16 @@ export function proxyHeaders(referer: string): Record<string, string> {
   } catch {}
   return {
     "User-Agent": UA,
-    Referer: referer,
-    ...(origin ? { Origin: origin } : {}),
+    Referer: referer.includes("daddy") ? "https://daddylive.mp/" : referer,
+    Origin: origin || "https://daddylive.mp/",
     Accept: "*/*",
+    "Accept-Language": "en-US,en;q=0.9",
+    "Sec-Ch-Ua": '"Google Chrome";v="131", "Chromium";v="131", "Not_A Brand";v="24"',
+    "Sec-Ch-Ua-Mobile": "?0",
+    "Sec-Ch-Ua-Platform": '"macOS"',
+    "Sec-Fetch-Dest": "empty",
+    "Sec-Fetch-Mode": "cors",
+    "Sec-Fetch-Site": "cross-site",
   };
 }
 
