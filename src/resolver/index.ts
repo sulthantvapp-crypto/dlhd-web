@@ -21,10 +21,9 @@ export async function handleResolveLive(res: ServerResponse, channelId: number, 
     });
     const html = await response.text();
 
-    // resolveFromHtml ഇവിടെ ഉപയോഗിച്ചിരിക്കുന്നു, അതിനാൽ TypeScript എറർ വരില്ല
     const resolved = await resolveFromHtml(html, {
       channelId,
-      server: "server1",
+      server: "casting", // അല്ലെങ്കിൽ "cast" - പ്ലെയറിന് അനുയോജ്യമായത്
       embedUrl: targetUrl,
     });
 
