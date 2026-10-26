@@ -1,11 +1,12 @@
 import { extractAssetrageM3u8 } from "./assetrage.js";
 import { extractCdnLiveTvM3u8 } from "./cdnlivetv.js";
 import { extractDaddy3M3u8, extractDaddy3Meta } from "./daddy3.js";
+import { extractEmbedUrl } from "./dlhd-page.js"; // 🔥 ഇത് ഇവിടെ ആഡ് ചെയ്തിട്ടുണ്ട്
 import { decryptHubConfigFromHtml, buildHubPlayableUrl } from "./hub.js";
 import { extractIgniteShipM3u8 } from "./igniteandship.js";
 import { extractPlusM3u8, extractPlusMeta } from "./plus.js";
 import { extractWideiptvM3u8, extractWideiptvSlug } from "./wideiptv.js";
-import type { ResolvedStream, ServerKind } from "./types.js";
+import type { ResolvedStream, ServerKind } from "../types.js"; // 🔥 പാത്ത് ശരിയാക്കിയിരിക്കുന്നു
 
 export type PlayableResult = {
   playableUrl: string;
@@ -20,7 +21,6 @@ export function htmlMayContainPlayable(html: string): boolean {
 }
 
 export async function extractPlayableFromHtml(html: string): Promise<PlayableResult | null> {
-  // 1. Run fast synchronous extractors first to avoid unnecessary async blocking
   const assetrageUrl = extractAssetrageM3u8(html);
   if (assetrageUrl) {
     return { playableUrl: assetrageUrl, mimeType: "application/x-mpegURL", meta: {} };
@@ -56,7 +56,6 @@ export async function extractPlayableFromHtml(html: string): Promise<PlayableRes
     };
   }
 
-  // 2. Run the heavier async hub check last
   const hubConfig = await decryptHubConfigFromHtml(html);
   if (hubConfig) {
     const playableUrl = buildHubPlayableUrl(hubConfig);
