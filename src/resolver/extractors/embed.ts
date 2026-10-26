@@ -5,6 +5,7 @@ import { decryptHubConfigFromHtml, buildHubPlayableUrl } from "./hub.js";
 import { extractIgniteShipM3u8 } from "./igniteandship.js";
 import { extractPlusM3u8, extractPlusMeta } from "./plus.js";
 import { extractWideiptvM3u8, extractWideiptvSlug } from "./wideiptv.js";
+import type { ResolvedStream, ServerKind } from "./types.js";
 
 export type PlayableResult = {
   playableUrl: string;
@@ -19,25 +20,10 @@ export function htmlMayContainPlayable(html: string): boolean {
 }
 
 export async function extractPlayableFromHtml(html: string): Promise<PlayableResult | null> {
+  // 1. Run fast synchronous extractors first to avoid unnecessary async blocking
   const assetrageUrl = extractAssetrageM3u8(html);
   if (assetrageUrl) {
-    return {
-      playableUrl: assetrageUrl,
-      mimeType: "application/x-mpegURL",
-      meta: {},
-    };
-  }
-
-  const hubConfig = await decryptHubConfigFromHtml(html);
-  if (hubConfig) {
-    const playableUrl = buildHubPlayableUrl(hubConfig);
-    if (playableUrl) {
-      return {
-        playableUrl,
-        mimeType: "video/webm",
-        meta: { streamId: hubConfig.streamId, baseUrl: hubConfig.baseUrl },
-      };
-    }
+    return { playableUrl: assetrageUrl, mimeType: "application/x-mpegURL", meta: {} };
   }
 
   const plusUrl = extractPlusM3u8(html);
@@ -48,11 +34,7 @@ export async function extractPlayableFromHtml(html: string): Promise<PlayableRes
   const wideUrl = extractWideiptvM3u8(html);
   if (wideUrl) {
     const slug = extractWideiptvSlug(html);
-    return {
-      playableUrl: wideUrl,
-      mimeType: "application/x-mpegURL",
-      meta: slug ? { slug } : {},
-    };
+    return { playableUrl: wideUrl, mimeType: "application/x-mpegURL", meta: slug ? { slug } : {} };
   }
 
   const cdnUrl = extractCdnLiveTvM3u8(html);
@@ -74,5 +56,48 @@ export async function extractPlayableFromHtml(html: string): Promise<PlayableRes
     };
   }
 
+  // 2. Run the heavier async hub check last
+  const hubConfig = await decryptHubConfigFromHtml(html);
+  if (hubConfig) {
+    const playableUrl = buildHubPlayableUrl(hubConfig);
+    if (playableUrl) {
+      return {
+        playableUrl,
+        mimeType: "video/webm",
+        meta: { streamId: hubConfig.streamId, baseUrl: hubConfig.baseUrl },
+      };
+    }
+  }
+
   return null;
+}
+
+export type ResolveContext = {
+  channelId: number;
+  server: ServerKind;
+  embedUrl: string;
+};
+
+export async function resolveFromHtml(
+  embedHtml: string,
+  ctx: ResolveContext,
+): Promise<ResolvedStream> {
+  const resolved = await extractPlayableFromHtml(embedHtml);
+  if (!resolved) {
+    throw new Error(`no playable stream in ${ctx.server} embed`);
+  }
+  return { ...ctx, ...resolved };
+}
+
+export function resolveEmbedFromDlhdPage(
+  dlhdHtml: string,
+  embedHtml: string,
+  channelId: number,
+  server: ServerKind,
+): Promise<ResolvedStream> {
+  const embedUrl = extractEmbedUrl(dlhdHtml);
+  if (!embedUrl) {
+    throw new Error(`embed iframe not found for channel ${channelId} server ${server}`);
+  }
+  return resolveFromHtml(embedHtml, { channelId, server, embedUrl });
 }
