@@ -1,13 +1,35 @@
 import type { ServerResponse } from "node:http";
-import { resolveFromHtml } from "./extractors/embed.js"; // അല്ലെങ്കിൽ കറക്റ്റ് പാത്ത്
+import { resolveFromHtml } from "./extractors/embed.js";
+import { fetchChannelInfo } from "../channels/fetch.js";
+import { watchUrl } from "../channels/urls.js";
 
 export async function handleResolveLive(res: ServerResponse, channelId: number, origin: string) {
   try {
-    // ഉദാഹരണത്തിന് ആവശ്യമായ എച്ച്എംഎൽ അല്ലെങ്കിൽ റിക്വസ്റ്റ് ഫെച്ച് ചെയ്ത് resolveFromHtml വിളിക്കുന്ന കോഡ്
-    // ഇവിടെ നിന്റെ പ്രൊജക്റ്റിലെ നിലവിലുള്ള ലോജിക് അനുസരിച്ച് embedHtml എടുക്കണം.
-    
+    const channel = await fetchChannelInfo(channelId);
+    if (!channel) {
+      res.writeHead(404, { "Content-Type": "text/plain" });
+      res.end("channel not found");
+      return;
+    }
+
+    const targetUrl = watchUrl(channelId);
+    const response = await fetch(targetUrl, {
+      headers: {
+        "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64)",
+        "Referer": "https://daddylive.mp/",
+      },
+    });
+    const html = await response.text();
+
+    // resolveFromHtml ഇവിടെ ഉപയോഗിച്ചിരിക്കുന്നു, അതിനാൽ TypeScript എറർ വരില്ല
+    const resolved = await resolveFromHtml(html, {
+      channelId,
+      server: "server1",
+      embedUrl: targetUrl,
+    });
+
     res.writeHead(200, { "Content-Type": "application/json; charset=utf-8" });
-    res.end(JSON.stringify({ success: true, channelId, origin }));
+    res.end(JSON.stringify({ success: true, ...resolved, origin }));
   } catch (err) {
     const message = err instanceof Error ? err.message : "error";
     res.writeHead(500, { "Content-Type": "text/plain" });
